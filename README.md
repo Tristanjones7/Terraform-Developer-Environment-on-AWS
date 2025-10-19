@@ -14,7 +14,10 @@
 
 <br/><br/>
 
-A reproducible, recruiter-friendly **Terraform** project that builds a **VPC + public subnet + IGW + route table** and deploys an **Ubuntu 24.04 EC2** instance with **Docker** bootstrapped via user-data.
+A fully automated **development environment** built with **Terraform**, **AWS**, and **Docker**.  
+This project provisions an entire network stack — VPC, subnet, internet gateway, route table, and a secure EC2 instance — then bootstraps Docker using user-data.  
+It also automatically generates an SSH config for easy remote access from macOS using the VS Code Remote-SSH extension.
+
 
 </div>
 

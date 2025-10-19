@@ -1,4 +1,4 @@
-<h1 align="center">🧱 Terraform Developer Environment on AWS</h1>
+<h1 align="center">🧱 Terraform AWS Dev Environment with Docker on EC2</h1>
 
 <h2>📖 Overview</h2>
 This project sets up a lightweight <b>developer environment on AWS</b> using <b>Terraform</b>.  

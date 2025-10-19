@@ -1,126 +1,98 @@
-<h1 align="center">🧱 Terraform AWS Dev Environment with Docker on EC2</h1>
+<div align="center">
 
-<h2>📖 Overview</h2>
-This project sets up a lightweight <b>developer environment on AWS</b> using <b>Terraform</b>.  
-The goal is to keep the build <b>minimal and efficient</b>, using only the core resources needed for a functional, secure development setup.  
-Once deployed, you’ll be able to connect to your EC2 instance directly from <b>VS Code</b> via a remote SSH session.
+# 🧱 **Terraform AWS Dev Environment with Docker on EC2**
 
----
+<!-- Badges -->
+<a href="https://www.terraform.io/"><img src="https://img.shields.io/badge/Terraform-IaC-7B42BC?logo=terraform&logoColor=white" alt="Terraform"></a>
+<a href="https://aws.amazon.com/"><img src="https://img.shields.io/badge/AWS-Cloud-232F3E?logo=amazon-aws&logoColor=FF9900" alt="AWS"></a>
+<a href="https://aws.amazon.com/ec2/"><img src="https://img.shields.io/badge/EC2-Compute-FF9900?logo=amazon-aws&logoColor=white" alt="EC2"></a>
+<a href="https://docs.aws.amazon.com/vpc/"><img src="https://img.shields.io/badge/VPC-Networking-146EB4?logo=amazon-aws&logoColor=white" alt="VPC"></a>
+<a href="https://ubuntu.com/download/server"><img src="https://img.shields.io/badge/Ubuntu-24.04%20LTS-E95420?logo=ubuntu&logoColor=white" alt="Ubuntu 24.04"></a>
+<a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-Engine-2496ED?logo=docker&logoColor=white" alt="Docker"></a>
+<img src="https://img.shields.io/badge/Region-us--west--2-blue" alt="Region us-west-2">
+<img src="https://img.shields.io/badge/Status-Production%20Ready-success" alt="Status">
 
-<h2>⚙️ What You’ll Build</h2>
+<br/><br/>
 
-This Terraform configuration provisions the following components:
+A reproducible, recruiter-friendly **Terraform** project that builds a **VPC + public subnet + IGW + route table** and deploys an **Ubuntu 24.04 EC2** instance with **Docker** bootstrapped via user-data.
 
-- <b>VPC</b> – The foundational network layer for your AWS resources.  
-- <b>Internet Gateway</b> – Enables internet access for your public subnet.  
-- <b>Public Subnet</b> – Hosts the EC2 instance for your development environment.  
-- <b>Route Table</b> – Connects the subnet to the Internet Gateway.  
-- <b>Security Group</b> – Manages inbound/outbound rules for SSH and other access.  
-- <b>EC2 Instance</b> – Serves as the <b>developer node</b>, bootstrapped with user data to configure your environment automatically.  
-
----
-
-<h2>🧩 Tools & Technologies</h2>
-
-- Terraform – Infrastructure as Code  
-- AWS – Cloud Provider  
-- VS Code – IDE used for remote access and development  
-- User Data Scripts – Bootstraps and configures the EC2 instance automatically  
+</div>
 
 ---
 
-<h2>🧠 How It Works</h2>
+## 🚀 **Project Overview**
 
-1. Terraform processes the configuration files:
-   - <code>main.tf</code>  
-   - <code>providers.tf</code>  
-   - <code>variables.tf</code>  
-   - <code>user_data.sh</code>  
+**Goal:** Create a reproducible, Docker-ready Ubuntu 24.04 environment on AWS using Terraform.
 
-2. Once deployed, Terraform outputs the <b>public IP</b> of your EC2 instance.
-
-3. A VS Code configuration file connects your terminal to the EC2 node via <b>SSH</b>, allowing direct file access and remote development.
+**What it does:**
+- Provisions a complete **VPC** with public subnet and Internet Gateway  
+- Configures routing for external connectivity  
+- Deploys an **Ubuntu 24.04 EC2 instance**  
+- Uses **user-data** to install Docker CE, CLI, and containerd on first boot  
+- Generates a macOS **SSH config** via template for one-command SSH  
+- Lightweight, modular, and fast to redeploy
 
 ---
 
-<h2>✅ Prerequisites</h2>
+## 🏗️ **Architecture**
+
+AWS Cloud
+└── VPC (10.123.0.0/16)
+├── Public Subnet (10.123.1.0/24)
+│ ├── Internet Gateway
+│ ├── Route Table (0.0.0.0/0 → IGW)
+│ └── EC2 Instance (Ubuntu 24.04)
+│ └── Docker Engine (installed via user-data)
+└── Security Group
+├── Ingress: all ports open for testing (0.0.0.0/0)
+└── Egress: all traffic allowed
+
+---
+
+## ⚙️ **File Breakdown**
+
+| File | Purpose |
+|------|--------|
+| **main.tf** | VPC, Subnet, IGW, Route Table, SG, EC2, local SSH config provisioner |
+| **datasources.tf** | Latest **Ubuntu 24.04 LTS** AMI from Canonical |
+| **providers.tf** | AWS provider (region `us-west-2`, profile `vscode`) |
+| **userdata.tpl** | Installs Docker CE/CLI/containerd on first boot |
+| **mac-ssh-config.tpl** | Writes `~/.ssh/config` for simplified SSH |
+
+---
+
+## 🧰 **Prerequisites**
 
 - Terraform ≥ 1.6  
-- AWS account with access keys (IAM user with least-privilege)  
-- AWS CLI (optional but recommended)  
-- VS Code + Remote SSH extension  
-- SSH key pair available locally (e.g., <code>~/.ssh/id_rsa.pub</code>)
-
----
-
-<h2>🔐 Authentication</h2>
-
-```bash
-export AWS_ACCESS_KEY_ID=AKIA...
-export AWS_SECRET_ACCESS_KEY=...
-export AWS_DEFAULT_REGION=eu-west-2   # change as needed
-If using a profile:
-provider "aws" {
-  region  = var.region
-  profile = var.aws_profile
-}
-<h2>⚙️ Configuration</h2>
-variables.tf
-variable "region" {
-  type        = string
-  default     = "eu-west-2"
-  description = "AWS region to deploy into"
-}
-
-variable "project_name" {
-  type        = string
-  default     = "dev-env"
-  description = "Name prefix for resources"
-}
-
-variable "ssh_key_name" {
-  type        = string
-  description = "Existing AWS key pair name for EC2 SSH"
-}
-
-variable "ssh_public_key_path" {
-  type        = string
-  default     = "~/.ssh/id_rsa.pub"
-  description = "Local path to your public key if creating a key pair"
-}
-terraform.tfvars
-region             = "eu-west-2"
-project_name       = "dev-env"
-ssh_key_name       = "tristan-dev-key"
-ssh_public_key_path = "~/.ssh/id_rsa.pub"
-<h2>🚀 Deploy</h2>
+- AWS CLI configured:
+  ```bash
+  aws configure --profile vscode
+SSH key at ~/.ssh/terrakey & ~/.ssh/terrakey.pub
+VS Code Remote-SSH extension (optional but nice)
+🪜 Deployment
 terraform init
-terraform validate
-terraform plan -out plan.tfplan
-terraform apply plan.tfplan
-Terraform will output the EC2 public IP (and any other outputs defined).
-<h2>💻 Connect via VS Code (Remote SSH)</h2>
-Copy the output dev_instance_public_ip.
-In VS Code, install Remote - SSH extension.
-Add to ~/.ssh/config:
-Host aws-dev
-  HostName <PUBLIC_IP_FROM_OUTPUT>
-  User ec2-user
-  IdentityFile ~/.ssh/id_rsa
-In VS Code: Remote Explorer → SSH Targets → aws-dev → Connect
-<h2>📤 Outputs</h2>
-outputs.tf
-output "dev_instance_public_ip" {
-  value       = aws_instance.dev.public_ip
-  description = "Public IP of the developer EC2 instance"
-}
-<h2>🧹 Clean Up</h2>
-terraform destroy
-<h2>💸 Cost & Security Notes</h2>
-Uses public subnet + EC2 + Internet Gateway — minimal cost, but not free.
-Restrict SSH access to your IP only in Security Group rules.
-Store state in a remote backend (Terraform Cloud or S3 + KMS) for security.
-Never commit secrets; use Terraform Cloud variables or environment variables instead.
-<h2>🏁 Summary</h2>
-This project serves as a hands-on foundation for cloud-based development with Terraform and AWS.
-By keeping it minimal, modular, and secure, it’s easy to extend as your infrastructure and skillset grow.
+terraform plan
+terraform apply -auto-approve
+Terraform will output your instance’s public IP and (via the template) write a simple SSH config.
+🔐 Connect & Verify
+# SSH (macOS; created by mac-ssh-config.tpl)
+ssh ubuntu@<public-ip>
+
+# Verify Docker
+docker --version
+sudo systemctl status docker
+docker run hello-world
+Expected:
+Docker version 28.2.2, build 28.2.2-0ubuntu1~24.04.1
+Hello from Docker!
+🧹 Cleanup
+terraform destroy -auto-approve
+🧠 Key Learnings
+Real-world IaC with Terraform (network + compute)
+User-data bootstrap for hands-off provisioning
+Verified Docker runtime on Ubuntu 24.04 LTS
+Smooth dev workflow via VS Code Remote-SSH
+👤 Author
+Tristan Jones — Cloud / DevOps Engineer
+📍 Ashton-under-Lyne · AWS SAA
+🔗 GitHub: @Tristanjones7

@@ -15,8 +15,7 @@
 <br/><br/>
 
 A fully automated **development environment** built with **Terraform**, **AWS**, and **Docker**.  
-This project provisions an entire network stack — VPC, subnet, internet gateway, route table, and a secure EC2 instance — then bootstraps Docker using user-data.  
-It also automatically generates an SSH config for easy remote access from macOS using the VS Code Remote-SSH extension.
+This project provisions an entire network stack — VPC, subnet, internet gateway, route table, and a secure EC2 instance — then bootstraps Docker using user-data.It also automatically generates an SSH config for easy remote access from macOS using the VS Code Remote-SSH extension.
 
 
 </div>
@@ -72,11 +71,13 @@ AWS Cloud
   aws configure --profile vscode
 SSH key at ~/.ssh/terrakey & ~/.ssh/terrakey.pub
 VS Code Remote-SSH extension (optional but nice)
+
 🪜 Deployment
 terraform init
 terraform plan
 terraform apply -auto-approve
 Terraform will output your instance’s public IP and (via the template) write a simple SSH config.
+
 🔐 Connect & Verify
 # SSH (macOS; created by mac-ssh-config.tpl)
 ssh ubuntu@<public-ip>
@@ -85,17 +86,24 @@ ssh ubuntu@<public-ip>
 docker --version
 sudo systemctl status docker
 docker run hello-world
+
 Expected:
 Docker version 28.2.2, build 28.2.2-0ubuntu1~24.04.1
 Hello from Docker!
+
+
 🧹 Cleanup
 terraform destroy -auto-approve
+
+
 🧠 Key Learnings
 Real-world IaC with Terraform (network + compute)
 User-data bootstrap for hands-off provisioning
 Verified Docker runtime on Ubuntu 24.04 LTS
 Smooth dev workflow via VS Code Remote-SSH
+
+
 👤 Author
+
 Tristan Jones — Cloud / DevOps Engineer
-📍 Ashton-under-Lyne · AWS SAA
 🔗 GitHub: @Tristanjones7
